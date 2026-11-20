@@ -14,8 +14,11 @@ and a DATE CHECK box. 35 stories in all, every one of them verified as
 having happened, or first been reported, on 20 November 2026.
 
 The image is drawn entirely in code: a hand-written PNG encoder, a 5x7
-bitmap font, and vector illustrations for every story. No photos, no
-network, no randomness — two runs produce byte-identical output.
+bitmap font, and 13 hand-drawn vector illustrations — a cyclone, a
+bombed bridge, the White House, the Capitol, a Bitcoin chart, a cricket
+match, a Wall Street sell-off chart, a world map, vignettes for COP31,
+Haiti and Van Gogh, and two masthead emblems. No photos, no network, no
+randomness — two runs produce byte-identical output.
 
 ## Run it
 
