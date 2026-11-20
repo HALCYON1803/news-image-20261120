@@ -5,13 +5,13 @@
 [![reward](https://make.fun/badge/news-image-20261120/HALCYON1803/news-image-20261120/reward.svg)](https://make.fun/bounty/news-image-20261120)
 
 A one-day world news front page for **Friday 20 November 2026**: Cyclone
-Akvan hits Odisha, Trump puts the Iran decision off until 2027, the US
-Senate blocks the Iran war-powers vote 51–48, Phillips' century lifts New
-Zealand to 317–6, Bitcoin slides under $62,000, and 34 suspected gang
-members are killed in a Haiti police raid — plus a world map, 20 briefs,
-a numbers strip and a DATE CHECK box. 27 stories in all, every one of
-them verified as having happened, or first been reported, on 20 November
-2026.
+Akvan completes landfall in Odisha with 370,000 evacuated, Russian
+missiles hit three Kyiv bridges overnight, Trump puts the Iran decision
+off until 2027, the US Senate blocks the Iran war-powers vote 51–48,
+Nicholls' 175* lifts New Zealand to 368, Bitcoin sinks to $61,273, and
+the Dow plunges 1,101 — plus a world map, 28 briefs, a numbers strip
+and a DATE CHECK box. 35 stories in all, every one of them verified as
+having happened, or first been reported, on 20 November 2026.
 
 The image is drawn entirely in code: a hand-written PNG encoder, a 5x7
 bitmap font, and vector illustrations for every story. No photos, no

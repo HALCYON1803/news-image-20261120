@@ -519,9 +519,11 @@ function drawTrump(x: number, y: number, w: number, h: number): void {
   fillRect(cx0, cy0, 92, h - 24, WHITE);
   fillRect(cx0, cy0, 92, 20, RED);
   drawText(cx0 + 30, cy0 + 4, 2, "JAN", WHITE);
-  drawText(cx0 + 8, cy0 + 30, 3, "2027", INK);
-  hline(cx0 + 8, cy0 + 56, 76, GREY);
-  drawText(cx0 + 10, cy0 + 64, 1, "NO RUSH", RED);
+  drawText(cx0 + 8, cy0 + 26, 3, "2027", INK);
+  if (h >= 90) {
+    hline(cx0 + 8, cy0 + 56, 76, GREY);
+    drawText(cx0 + 10, cy0 + 64, 1, "NO RUSH", RED);
+  }
   // Two rings on top.
   ring(cx0 + 24, cy0, 5, INK);
   ring(cx0 + 68, cy0, 5, INK);
@@ -580,7 +582,7 @@ function drawCricket(x: number, y: number, w: number, h: number): void {
   disc(x + w - 32, y + 22, 2, [255, 200, 200]);
   // Score board strip.
   fillRect(x + 6, y + h - 20, 74, 15, INK);
-  drawText(x + 10, y + h - 17, 1, "317-6", WHITE);
+  drawText(x + 10, y + h - 17, 1, "368", WHITE);
 }
 
 // 5 — Bitcoin: gold coin and a falling chart.
@@ -596,13 +598,13 @@ function drawBitcoin(x: number, y: number, w: number, h: number): void {
   drawText(cx - 12, cy - 14, 4, "B", [120, 84, 10]);
   // Falling chart.
   const pts: number[][] = [
-    [x + 84, y + 12],
-    [x + 108, y + 20],
-    [x + 132, y + 16],
-    [x + 156, y + 34],
-    [x + 180, y + 30],
-    [x + 204, y + 52],
-    [x + 224, y + 66],
+    [x + 84, y + 10],
+    [x + 108, y + 16],
+    [x + 132, y + 14],
+    [x + 156, y + 26],
+    [x + 180, y + 24],
+    [x + 204, y + 38],
+    [x + 224, y + 48],
   ];
   for (let i = 0; i + 1 < pts.length; i++) {
     line(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], RED);
@@ -612,9 +614,9 @@ function drawBitcoin(x: number, y: number, w: number, h: number): void {
   // Arrow head down.
   polyFill(
     [
-      [x + 224, y + 66],
-      [x + 212, y + 60],
-      [x + 222, y + 78],
+      [x + 224, y + 48],
+      [x + 212, y + 42],
+      [x + 222, y + 58],
     ],
     RED
   );
@@ -662,6 +664,50 @@ function drawTalksFlag(x: number, y: number, w: number, h: number): void {
   // Ukraine band at the bottom.
   fillRect(x, y + h - 10, w, 5, [0, 91, 187]);
   fillRect(x, y + h - 5, w, 5, [255, 213, 0]);
+}
+
+// 8 — Kyiv bridges: a Dnipro bridge at dawn, hit mid-span.
+function drawKyiv(x: number, y: number, w: number, h: number): void {
+  vGrad(x, y, w, h, [38, 52, 74], [120, 140, 165]);
+  // River Dnipro, bottom third.
+  fillRect(x, y + Math.floor(h * 0.62), w, h - Math.floor(h * 0.62), SEA);
+  for (let i = 0; i < 8; i++) {
+    const wy = y + Math.floor(h * 0.62) + 6 + i * 4;
+    for (let xx = x + 6; xx < x + w - 6; xx += 30) {
+      line(xx, wy, xx + 14, wy, [178, 214, 228]);
+    }
+  }
+  // Bridge deck across the middle.
+  fillRect(x, y + 52, w, 6, [30, 30, 34]);
+  // Pylons and suspension cables.
+  fillRect(x + 90, y + 18, 8, 40, [30, 30, 34]);
+  fillRect(x + w - 98, y + 18, 8, 40, [30, 30, 34]);
+  line(x + 94, y + 18, x + Math.floor(w / 2), y + 52, [30, 30, 34]);
+  line(x + w - 94, y + 18, x + Math.floor(w / 2), y + 52, [30, 30, 34]);
+  // Smoke above the blast.
+  disc(x + Math.floor(w / 2) - 30, y + 26, 9, [90, 90, 96]);
+  disc(x + Math.floor(w / 2) + 28, y + 22, 11, [110, 110, 116]);
+  disc(x + Math.floor(w / 2) + 44, y + 30, 7, [90, 90, 96]);
+  // Explosion burst on the deck.
+  const cx = x + Math.floor(w / 2);
+  const cy = y + 44;
+  disc(cx, cy, 18, [255, 120, 30]);
+  disc(cx, cy, 11, [255, 200, 60]);
+  disc(cx, cy, 5, WHITE);
+  // Red alert tag.
+  fillRect(x + 6, y + 6, 96, 18, RED);
+  drawText(x + 11, y + 9, 1, "3 BRIDGES HIT", WHITE);
+}
+
+// 9 — Dow sell-off strip: falling red bars.
+function drawDow(x: number, y: number, w: number, h: number): void {
+  fillRect(x, y, w, h, WHITE);
+  rect(x, y, w, h, INK);
+  const bars = [30, 24, 26, 18, 20, 12, 8];
+  for (let i = 0; i < bars.length; i++) {
+    const bh = bars[i];
+    fillRect(x + 6 + i * 11, y + h - 4 - bh, 8, bh, RED);
+  }
 }
 
 // ---------------------------------------------------------------- world map
@@ -729,19 +775,19 @@ const CONTINENTS: number[][][] = [
 // [lon, lat, hero number (0 = brief dot), pixel offset x, pixel offset y]
 const MAP_DOTS: number[][] = [
   [85.2, 19.3, 1, 0, 0],
-  [-77.0, 38.9, 2, -7, -5],
-  [-77.0, 38.9, 3, 8, 6],
-  [174.8, -41.3, 4, 0, 0],
-  [-72.3, 18.5, 5, 0, 0],
-  [-74.0, 40.7, 6, 0, 0],
-  [13.4, 52.5, 7, 0, 0],
-  [30.5, 50.4, 0, 0, 0],
+  [30.5, 50.4, 2, 0, 0],
+  [-77.0, 38.9, 3, -14, -8],
+  [-77.0, 38.9, 4, 4, -14],
+  [174.8, -41.3, 5, 0, 0],
+  [-74.0, 40.7, 6, 17, -1],
+  [-74.0, 40.7, 7, -1, 11],
   [-6.3, 53.3, 0, 0, 0],
-  [121.6, 25.0, 0, 0, 0],
-  [139.7, 35.7, 0, 0, 0],
-  [127.0, 37.5, 0, 0, 0],
-  [-47.9, -15.8, 0, 0, 0],
-  [-118.2, 34.0, 0, 0, 0],
+  [30.7, 36.9, 0, 0, 0],
+  [34.5, 31.5, 0, 0, 0],
+  [85.3, 27.7, 0, 0, 0],
+  [-58.4, -34.6, 0, 0, 0],
+  [-75.7, 45.4, 0, 0, 0],
+  [101.7, 3.1, 0, 0, 0],
 ];
 
 function drawMap(x: number, y: number, w: number, h: number): void {
@@ -781,38 +827,46 @@ function drawMap(x: number, y: number, w: number, h: number): void {
 // ---------------------------------------------------------------- layout
 
 const BRIEFS_COL1: string[] = [
-  "EU SUMMONS RUSSIA ENVOY",
-  "KUSHNER: NATO DEAL 'OK'",
-  "TAIWAN CURBS SHORTING",
-  "SPARKS NEAR $750M SALE",
-  "LULA SIGNS 5-DAY WEEK",
-  "TOKYO DROPS CASINO BID",
-  "KOREA: 6,310 ARRESTED",
-  "DOW -1,000; NASDAQ -2.1%",
-  "ETH $1,754; ETF OUT",
-  "69 TRAINS AXED FOR AKVAN",
+  "COP31: FINAL-DAY TALKS",
+  "PETE ROSE PARDONED",
+  "HAITI GANGS KILL 42",
+  "MERZ: TALKS 'DIFFICULT'",
+  "UK DRONE AID FOR KYIV",
+  "US SANCTIONS CARTELS",
+  "VAN GOGH SELLS $190.4M",
+  "POLAND PROBES OBJECTS",
+  "UK-EU YOUTH MOBILITY",
+  "EU-UK RESET DEAL DONE",
+  "ARGENTINA: 71-0 VOTE",
+  "NEPAL PM VISITS INDIA",
+  "MODI: CUT IMPORTS",
+  "META DROPS NET-ZERO GOAL",
 ];
 
 const BRIEFS_COL2: string[] = [
-  "AKVAN: RAIN FEARED",
-  "AKVAN: 200,000 TO GO",
-  "IRAN WAR COST $48.3BN",
-  "TRUMP TO BRIEF PRESS",
-  "COP31 TALKS CONTINUE",
-  "INDIA-NZ: 100TH YEAR",
-  "3RD STORM IN A MONTH",
-  "STRATEGY -4.6% TO $86",
-  "INDIA WIN BADMINTON",
-  "HOCKEY TROPHY BEGINS",
+  "DEEP-SEA MINING FIRST",
+  "SOMALIA EXPELS UAE",
+  "GAZANS RETURN HOME",
+  "FIONA THE HIPPO DIES",
+  "EUROPE YOUTH PROTEST",
+  "CANADA: $250K REWARD",
+  "MALAYSIA VISA U-TURN",
+  "INDIGO AXES 4 ROUTES",
+  "BANGLADESH TROOPS OUT",
+  "MOON-SOIL POTATOES",
+  "MUSK: 'PRETTY FOOLISH'",
+  "UK: AXE BRAND VIDEO",
+  "CALEDONIA QUAKE 5.6",
+  "GEORGIA BLAST KILLS 6",
 ];
 
 const NUMBERS: [string, string][] = [
-  ["300,000", "EVACUATED"],
-  ["423", "RESCUE TEAMS"],
-  ["100 KM/H", "AKVAN WINDS"],
+  ["370,000", "EVACUATED"],
+  ["209 MM", "PATRAPUR RAIN"],
+  ["-1,101", "DOW POINTS"],
   ["51-48", "SENATE VOTE"],
-  ["$61,943", "BITCOIN PRICE"],
-  ["118", "PHILLIPS' TON"],
+  ["$61,641", "BITCOIN PRICE"],
+  ["175*", "NICHOLLS' TON"],
 ];
 
 function panel(x: number, y: number, w: number, h: number): void {
@@ -833,84 +887,84 @@ function build(): void {
 
   // ---- row A: two lead heroes ----
   // Akvan, left, picture on the left.
-  panel(8, 112, 552, 236);
-  drawCyclone(16, 120, 216, 220);
+  panel(8, 112, 552, 228);
+  drawCyclone(16, 120, 216, 212);
   drawText(240, 122, 2, "INDIA - CYCLONE", RED);
-  drawText(240, 142, 3, "AKVAN SLAMS INTO", INK);
-  drawText(240, 166, 3, "ODISHA AT NOON", INK);
+  drawText(240, 142, 3, "AKVAN HITS ODISHA", INK);
+  drawText(240, 166, 3, "370,000 EVACUATED", INK);
   drawPara(
     240,
     198,
     2,
     312,
-    "300,000 people moved to safety. 423 rescue teams on standby as winds hit 100 km/h.",
+    "Landfall done 11:20 IST. Winds 70-80, gusting 90. No major damage.",
     INK
   );
   drawPara(
     240,
-    272,
+    264,
     2,
     312,
-    "69 trains cancelled. Schools shut in 11 districts.",
+    "Heaviest rain: Patrapur 209 mm. Schools shut in 11 districts.",
     INK
   );
-  fillRect(240, 330, 150, 16, RED);
-  drawText(246, 333, 1, "LANDFALL: NOON IST", WHITE);
+  fillRect(240, 322, 150, 16, RED);
+  drawText(246, 325, 1, "LANDFALL DONE 11:20 IST", WHITE);
 
-  // Trump / Iran, right, picture on top.
-  panel(568, 112, 448, 236);
-  drawTrump(576, 120, 432, 96);
-  drawText(576, 222, 2, "USA - IRAN", RED);
-  drawText(576, 242, 3, "TRUMP DELAYS IRAN", INK);
-  drawText(576, 266, 3, "DECISION TO 2027", INK);
+  // Kyiv bridges, right, picture on top.
+  panel(568, 112, 448, 228);
+  drawKyiv(576, 120, 432, 88);
+  drawText(576, 214, 2, "UKRAINE - WAR", RED);
+  drawText(576, 234, 3, "KYIV BRIDGES BOMBED", INK);
+  drawText(576, 258, 3, "IN OVERNIGHT STRIKE", INK);
   drawPara(
     576,
-    296,
+    288,
     2,
     432,
-    "\"We'll see after January 1,\" Trump told Fox News. \"I'm not rushing.\"",
+    "Three Dnipro crossings hit; at least 5 dead. Biggest bridge attack of the war.",
     INK
   );
 
   // ---- row B: four medium heroes ----
   const cols = [
-    { x: 8, kicker: "USA - CONGRESS", pic: drawSenate, h1: "SENATE BLOCKS IRAN", h2: "WAR POWERS VOTE", b1: "51-48: BID TO CURB", b2: "WAR POWERS FAILS", foot: "COLLINS, MURKOWSKI, PAUL: YES" },
-    { x: 260, kicker: "SPORT - CRICKET", pic: drawCricket, h1: "PHILLIPS TON LIFTS", h2: "NZ TO 317-6", b1: "PHILLIPS 118 AS NZ", b2: "REACH 317-6", foot: "NICHOLLS 146* AT LUNCH" },
-    { x: 512, kicker: "MARKETS - CRYPTO", pic: drawBitcoin, h1: "BITCOIN SLIDES UNDER", h2: "$62,000", b1: "LOWEST SINCE JULY AS", b2: "$528M LIQUIDATED", foot: "ETH $1,754 - STRATEGY -4.6%" },
-    { x: 764, kicker: "HAITI - SECURITY", pic: drawHaiti, h1: "34 GANG SUSPECTS", h2: "KILLED IN RAID", b1: "POLICE RETAKE", b2: "MARTISSANT AREA", foot: "NO POLICE OR CIVILIANS HURT" },
+    { x: 8, kicker: "USA - IRAN", pic: drawTrump, h1: "TRUMP DELAYS IRAN", h2: "DECISION TO 2027", b1: "\"WE'LL SEE AFTER", b2: "JANUARY 1\" - FOX", foot: "TRUMP: 'I'M NOT RUSHING'" },
+    { x: 260, kicker: "USA - CONGRESS", pic: drawSenate, h1: "SENATE BLOCKS IRAN", h2: "WAR POWERS VOTE", b1: "51-48: BID TO CURB", b2: "WAR POWERS FAILS", foot: "COLLINS, MURKOWSKI, PAUL: YES" },
+    { x: 512, kicker: "MARKETS - CRYPTO", pic: drawBitcoin, h1: "BITCOIN SINKS TO", h2: "$61,273", b1: "LOWEST SINCE JULY;", b2: "ETF OUT $3.47BN", foot: "7TH STRAIGHT WEEKLY LOSS" },
+    { x: 764, kicker: "SPORT - CRICKET", pic: drawCricket, h1: "NICHOLLS 175* LIFTS", h2: "NZ TO 368", b1: "INDIA REPLY 159-1", b2: "JAISWAL 85, RAHUL 52", foot: "DAY 2 STUMPS, WELLINGTON" },
   ];
   for (const c of cols) {
-    panel(c.x, 352, 244, 224);
-    drawText(c.x + 8, 360, 2, c.kicker, RED);
-    c.pic(c.x + 8, 378, 228, 84);
-    drawText(c.x + 8, 468, 2, c.h1, INK);
-    drawText(c.x + 8, 486, 2, c.h2, INK);
-    drawText(c.x + 8, 510, 2, c.b1, INK);
-    drawText(c.x + 8, 528, 2, c.b2, INK);
-    hline(c.x + 8, 552, 228, GREY);
-    drawText(c.x + 8, 558, 1, c.foot, GREY);
+    panel(c.x, 344, 244, 212);
+    drawText(c.x + 8, 352, 2, c.kicker, RED);
+    c.pic(c.x + 8, 370, 228, 72);
+    drawText(c.x + 8, 452, 2, c.h1, INK);
+    drawText(c.x + 8, 470, 2, c.h2, INK);
+    drawText(c.x + 8, 494, 2, c.b1, INK);
+    drawText(c.x + 8, 512, 2, c.b2, INK);
+    hline(c.x + 8, 536, 228, GREY);
+    drawText(c.x + 8, 542, 1, c.foot, GREY);
   }
 
-  // ---- Merz strip: Europe to join Ukraine talks ----
-  panel(8, 580, 1008, 60);
-  fillRect(8, 580, 6, 60, RED);
-  drawTalksFlag(22, 588, 84, 44);
-  drawText(118, 590, 2, "EUROPE TO JOIN NEW UKRAINE TALKS SOON, SAYS MERZ", INK);
-  drawText(118, 612, 2, "BERLIN SUMMIT BACKS KYIV; EU LEADERS MEET IN DUBLIN TODAY ON FUNDING.", GREY);
+  // ---- Dow strip: Wall Street sell-off ----
+  panel(8, 560, 1008, 56);
+  fillRect(8, 560, 6, 56, RED);
+  drawDow(22, 568, 84, 40);
+  drawText(118, 568, 2, "DOW PLUNGES 1,101 AS WALL ST SELLS OFF", INK);
+  drawText(118, 590, 2, "S&P -2.0%, 6TH STRAIGHT FALL - LONGEST LOSING RUN SINCE 2024.", GREY);
 
   // ---- row C: world map + briefs ----
-  panel(8, 644, 420, 208);
-  drawText(20, 652, 2, "WHERE THE NEWS HAPPENED", INK);
-  drawMap(16, 670, 404, 126);
-  drawText(20, 802, 2, "1 AKVAN  2 IRAN  3 SENATE", INK);
-  drawText(20, 819, 2, "4 CRICKET  5 HAITI  6 BITCOIN", INK);
-  drawText(20, 836, 2, "7 TALKS - DOTS: OTHER STORIES", GREY);
+  panel(8, 620, 420, 264);
+  drawText(20, 628, 2, "WHERE THE NEWS HAPPENED", INK);
+  drawMap(16, 646, 404, 166);
+  drawText(20, 818, 2, "1 AKVAN  2 KYIV  3 IRAN", INK);
+  drawText(20, 835, 2, "4 SENATE  5 CRICKET  6 BITCOIN", INK);
+  drawText(20, 852, 2, "7 DOW - DOTS: OTHER STORIES", GREY);
 
-  panel(436, 644, 580, 208);
-  drawText(448, 652, 2, "THE DAY IN BRIEF", RED);
-  hline(448, 668, 556, RED);
-  for (let i = 0; i < 10; i++) {
-    const yb = 676 + i * 17;
+  panel(436, 620, 580, 264);
+  drawText(448, 628, 2, "THE DAY IN BRIEF", RED);
+  hline(448, 644, 556, RED);
+  for (let i = 0; i < 14; i++) {
+    const yb = 650 + i * 16;
     bullet(448, yb + 4, 6, RED);
     drawText(460, yb, 2, BRIEFS_COL1[i], INK);
     bullet(742, yb + 4, 6, RED);
@@ -920,28 +974,27 @@ function build(): void {
   // ---- numbers strip ----
   for (let i = 0; i < NUMBERS.length; i++) {
     const x = 8 + i * 168;
-    panel(x, 856, 166, 64);
-    drawTextCentered(x + 83, 864, 3, NUMBERS[i][0], RED);
-    drawTextCentered(x + 83, 892, 2, NUMBERS[i][1], INK);
+    panel(x, 888, 166, 60);
+    drawTextCentered(x + 83, 894, 3, NUMBERS[i][0], RED);
+    drawTextCentered(x + 83, 920, 2, NUMBERS[i][1], INK);
   }
 
   // ---- date check + footer ----
-  panel(8, 924, 640, 92);
-  fillRect(8, 924, 640, 4, RED);
-  drawText(20, 936, 2, "DATE CHECK - READ THIS FIRST", RED);
+  panel(8, 952, 640, 64);
+  fillRect(8, 952, 640, 4, RED);
+  drawText(20, 960, 2, "DATE CHECK - READ THIS FIRST", RED);
   drawPara(
     20,
-    956,
+    978,
     2,
     616,
-    "Every story here happened, or was first reported, on Friday 20 November 2026. Nothing is from 19 November or earlier.",
+    "Every story here happened, or was first reported, on Friday 20 November 2026.",
     INK
   );
-  panel(656, 924, 360, 92);
-  drawText(668, 934, 2, "INTERNATIONAL CHILDREN'S DAY", INK);
-  drawText(668, 952, 2, "SOURCES: REUTERS, AP, IMD", INK);
-  drawText(668, 970, 2, "27 STORIES - ALL VERIFIED", INK);
-  drawText(668, 988, 2, "FOR 20 NOVEMBER 2026", GREY);
+  panel(656, 952, 360, 64);
+  drawText(668, 960, 2, "INTERNATIONAL CHILDREN'S DAY", INK);
+  drawText(668, 978, 2, "SOURCES: REUTERS, AP, IMD", INK);
+  drawText(668, 996, 2, "35 STORIES - ALL VERIFIED", INK);
   fillRect(8, 1019, 1008, 2, INK);
 }
 
