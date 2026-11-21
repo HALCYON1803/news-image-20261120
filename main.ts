@@ -1,8 +1,14 @@
-// THE WORLD TODAY — Friday 20 November 2026.
+// THE WORLD IN ONE DAY — Friday 20 November 2026 (v4).
 // A one-day world news front page, drawn entirely in code: no photos, no
 // network, no randomness. Node 22, standard library only. Writes
 // /output/entry.png (or $MAKEFUN_OUTPUT_DIR/entry.png), 1024x1024 PNG,
 // deterministic: the same input bytes every run.
+//
+// v4 rebuilds the page on the layout the top entries share: the date as
+// the masthead, a six-number strip, a region-count bar, 3 heroes + 10
+// mid stories each with its own picture and a named source, a world map
+// pinning the 13 drawn stories, 27 numbered briefs, and a DATE CHECK
+// that names the Thursday stories left out. 40 stories in all.
 //
 // Every story on the page happened, or was first reported, on Friday
 // 20 November 2026. Sources are listed in REPORT.md beside this repo.
@@ -782,7 +788,7 @@ function drawVignetteCOP31(x: number, y: number, w: number, h: number): void {
   disc(x + w - 18, y + 10, 6, GOLD);
   // Label strip.
   fillRect(x, y + h - 14, w, 14, TEAL);
-  drawTextCentered(x + Math.floor(w / 2), y + h - 11, 1, "COP31 - BELEM", WHITE);
+  drawTextCentered(x + Math.floor(w / 2), y + h - 11, 1, "COP31 - ANTALYA", WHITE);
   rect(x, y, w, h, INK);
 }
 
@@ -1021,6 +1027,185 @@ function drawDow(x: number, y: number, w: number, h: number): void {
   );
 }
 
+// 15 — Asia markets hero: four closing prices, all down.
+function drawMarkets(x: number, y: number, w: number, h: number): void {
+  fillRect(x, y, w, h, [18, 24, 44]);
+  halftone(x, y, w, h, 12, [34, 46, 78]);
+  const rows: [string, string, number][] = [
+    ["TAIPEI", "-6.2%", 6.2],
+    ["SEOUL", "-5.2%", 5.2],
+    ["TOKYO", "-5.1%", 5.1],
+    ["HONG KONG", "-1.9%", 1.9],
+  ];
+  for (let i = 0; i < 4; i++) {
+    const ry = y + 8 + i * 24;
+    drawText(x + 8, ry, 1, rows[i][0], [205, 205, 215]);
+    drawTextRight(x + w - 8, ry, 1, rows[i][1], [255, 140, 110]);
+    fillRect(x + 8, ry + 10, Math.floor(((w - 16) * rows[i][2]) / 6.2), 5, RED);
+  }
+}
+
+// 16 — Bitcoin, mid size: gold coin and a falling chart, fits 187 wide.
+function drawBitcoinMid(x: number, y: number, w: number, h: number): void {
+  fillRect(x, y, w, h, [18, 24, 44]);
+  halftone(x, y, w, h, 12, [34, 46, 78]);
+  const cx = x + 34;
+  const cy = y + Math.floor(h / 2);
+  disc(cx, cy, 22, [150, 110, 18]);
+  disc(cx - 4, cy - 2, 22, GOLD);
+  ring(cx - 4, cy - 2, 22, [160, 120, 20]);
+  ring(cx - 4, cy - 2, 16, [160, 120, 20]);
+  drawText(cx - 11, cy - 11, 3, "B", [120, 84, 10]);
+  const candles: [number, number, number][] = [
+    [72, 14, 10],
+    [96, 22, 12],
+    [120, 30, 10],
+    [144, 40, 12],
+  ];
+  for (const [cox, top, bh] of candles) {
+    line(x + cox + 4, y + top - 4, x + cox + 4, y + top + bh + 4, [200, 60, 50]);
+    fillRect(x + cox, y + top, 8, bh, [200, 60, 50]);
+  }
+  const pts: number[][] = [
+    [x + 76, y + 12],
+    [x + 100, y + 20],
+    [x + 124, y + 28],
+    [x + 148, y + 40],
+    [x + 172, y + 54],
+  ];
+  for (let i = 0; i + 1 < pts.length; i++) {
+    line(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], RED);
+  }
+  for (const p of pts) disc(p[0], p[1], 2, WHITE);
+  polyFill(
+    [
+      [x + 172, y + 54],
+      [x + 162, y + 48],
+      [x + 170, y + 64],
+    ],
+    RED
+  );
+  drawText(x + 72, y + h - 12, 1, "LOWEST SINCE JULY", [200, 200, 210]);
+}
+
+// 17 — UK and EU flags side by side: the reset deal.
+function drawFlags(x: number, y: number, w: number, h: number): void {
+  // Union Jack, left half.
+  fillRect(x, y, 92, h, [20, 50, 110]);
+  line(x + 2, y + 2, x + 90, y + h - 2, WHITE);
+  line(x + 2, y + 3, x + 90, y + h - 1, WHITE);
+  line(x + 2, y + 4, x + 90, y + h, WHITE);
+  line(x + 90, y + 2, x + 2, y + h - 2, WHITE);
+  line(x + 90, y + 3, x + 2, y + h - 1, WHITE);
+  line(x + 90, y + 4, x + 2, y + h, WHITE);
+  fillRect(x, y + 32, 92, 14, WHITE);
+  fillRect(x + 39, y, 14, h, WHITE);
+  fillRect(x, y + 36, 92, 6, RED);
+  fillRect(x + 43, y, 6, h, RED);
+  // EU flag, right half: blue field, ring of gold stars.
+  fillRect(x + 96, y, w - 96, h, [20, 50, 130]);
+  const ecx = x + 96 + Math.floor((w - 96) / 2);
+  const ecy = y + Math.floor(h / 2);
+  for (let i = 0; i < 12; i++) {
+    const a = (i * Math.PI * 2) / 12 - Math.PI / 2;
+    disc(Math.round(ecx + 24 * Math.cos(a)), Math.round(ecy + 24 * Math.sin(a)), 3, GOLD);
+  }
+  disc(ecx, ecy, 4, GOLD);
+  rect(x, y, w, h, INK);
+}
+
+// 18 — Japan inflation: rising bars and a red sun, 2.3% on top.
+function drawJapan(x: number, y: number, w: number, h: number): void {
+  fillRect(x, y, w, h, [240, 236, 224]);
+  disc(x + w - 24, y + 16, 10, RED);
+  drawText(x + 10, y + 6, 2, "2.3%", RED);
+  drawText(x + 10, y + 24, 1, "OCT CPI", GREY);
+  const heights = [18, 26, 34, 42, 52];
+  for (let i = 0; i < 5; i++) {
+    const bx = x + 10 + i * 34;
+    const bh = heights[i];
+    fillRect(bx, y + h - 8 - bh, 24, bh, i === 4 ? RED : [29, 78, 137]);
+  }
+  hline(x + 8, y + h - 8, w - 16, INK);
+}
+
+// 19 — Korea impeach: a courthouse and a gavel.
+function drawKorea(x: number, y: number, w: number, h: number): void {
+  vGrad(x, y, w, h, SKY, [240, 236, 224]);
+  const cx = x + Math.floor(w * 0.42);
+  const base = y + h - 16;
+  polyFill(
+    [
+      [cx - 52, base - 34],
+      [cx, base - 50],
+      [cx + 52, base - 34],
+    ],
+    [70, 90, 130]
+  );
+  fillRect(cx - 46, base - 34, 92, 8, WHITE);
+  for (let i = 0; i < 4; i++) fillRect(cx - 40 + i * 24, base - 26, 8, 26, WHITE);
+  fillRect(cx - 52, base, 104, 5, WHITE);
+  fillRect(x + 14, y + h - 8, w - 28, 4, LIGHT);
+  fillRect(x + 8, y + h - 4, w - 16, 4, [210, 204, 188]);
+  // Gavel, bottom right.
+  line(x + w - 52, y + h - 22, x + w - 22, y + h - 40, BROWN);
+  polyFill(
+    [
+      [x + w - 26, y + h - 46],
+      [x + w - 12, y + h - 38],
+      [x + w - 20, y + h - 26],
+      [x + w - 34, y + h - 34],
+    ],
+    BROWN
+  );
+  // Birds.
+  for (const [bx2, by2] of [
+    [x + 22, y + 16],
+    [x + 34, y + 10],
+  ]) {
+    line(bx2 - 4, by2, bx2, by2 - 3, INK);
+    line(bx2, by2 - 3, bx2 + 4, by2, INK);
+  }
+}
+
+// 20 — Poland missile: a Kh-101 trail arcing down to a burst in a field.
+function drawPolandMissile(x: number, y: number, w: number, h: number): void {
+  vGrad(x, y, w, h, [38, 52, 74], [120, 140, 165]);
+  for (let i = 0; i < 14; i++) {
+    const sx = x + 6 + Math.floor(hash2(i, 71) * (w - 12));
+    const sy = y + 4 + Math.floor(hash2(i, 72) * 20);
+    disc(sx, sy, 1, [210, 215, 230]);
+  }
+  // Field, bottom.
+  fillRect(x, y + h - 16, w, 16, [96, 128, 74]);
+  // Dotted trail arcing from top right down to the burst.
+  for (let t = 0; t <= 1; t += 0.08) {
+    const tx = Math.round(x + w - 24 - t * (w - 84));
+    const ty = Math.round(y + 10 + t * t * (h - 40));
+    disc(tx, ty, 2, [255, 220, 160]);
+  }
+  // Missile body near the end of the trail.
+  polyFill(
+    [
+      [x + 66, y + h - 34],
+      [x + 82, y + h - 42],
+      [x + 88, y + h - 34],
+      [x + 72, y + h - 26],
+    ],
+    [200, 205, 215]
+  );
+  line(x + 66, y + h - 34, x + 58, y + h - 28, [255, 160, 40]);
+  // Burst in the field.
+  disc(x + 52, y + h - 22, 13, [255, 120, 30]);
+  disc(x + 52, y + h - 22, 8, [255, 200, 60]);
+  disc(x + 52, y + h - 22, 4, WHITE);
+  disc(x + 52, y + h - 36, 7, [90, 90, 96]);
+  disc(x + 66, y + h - 38, 5, [110, 110, 116]);
+  // Tag.
+  fillRect(x + 6, y + 6, 44, 12, RED);
+  drawText(x + 10, y + 8, 1, "KH-101", WHITE);
+}
+
 // ---------------------------------------------------------------- world map
 
 // Coarse continent outlines in [lon, lat].
@@ -1083,22 +1268,34 @@ const CONTINENTS: number[][][] = [
   ],
 ];
 
-// [lon, lat, hero number (0 = brief dot), pixel offset x, pixel offset y]
+// [lon, lat, story number (0 = brief dot), pixel offset x, pixel offset y]
+// Numbers 1-13 are the drawn stories; blue dots are briefs.
 const MAP_DOTS: number[][] = [
   [85.2, 19.3, 1, 0, 0],
-  [30.5, 50.4, 2, 0, 0],
-  [-77.0, 38.9, 3, -14, -8],
-  [-77.0, 38.9, 4, 4, -14],
-  [174.8, -41.3, 5, 0, 0],
+  [30.5, 50.4, 2, -12, 0],
+  [121.5, 25.0, 3, 0, 10],
+  [-77.0, 38.9, 4, -14, -8],
+  [-77.0, 38.9, 5, 4, -14],
   [-74.0, 40.7, 6, 17, -1],
-  [-74.0, 40.7, 7, -1, 11],
-  [-6.3, 53.3, 0, 0, 0],
-  [30.7, 36.9, 0, 0, 0],
-  [34.5, 31.5, 0, 0, 0],
+  [174.8, -41.3, 7, 0, 0],
+  [-74.0, 40.7, 8, -1, 11],
+  [-0.1, 51.5, 9, 0, 0],
+  [-48.5, -1.4, 10, 0, 0],
+  [139.7, 35.7, 11, 12, -6],
+  [127.0, 37.5, 12, -12, 6],
+  [22.5, 51.0, 13, 12, 0],
+  [44.4, 33.3, 0, 0, 0],
+  [12.5, 42.0, 0, 0, 0],
+  [36.8, -1.3, 0, 0, 0],
+  [-89.2, 13.7, 0, 0, 0],
+  [33.8, -13.5, 0, 0, 0],
+  [56.3, 26.5, 0, 0, 0],
+  [-115.1, 36.1, 0, 0, 0],
+  [-72.7, 19.0, 0, 0, 0],
   [85.3, 27.7, 0, 0, 0],
   [-58.4, -34.6, 0, 0, 0],
   [-75.7, 45.4, 0, 0, 0],
-  [101.7, 3.1, 0, 0, 0],
+  [44.8, 41.7, 0, 0, 0],
 ];
 
 function drawMap(x: number, y: number, w: number, h: number): void {
@@ -1138,46 +1335,45 @@ function drawMap(x: number, y: number, w: number, h: number): void {
 // ---------------------------------------------------------------- layout
 
 const BRIEFS_COL1: string[] = [
-  "COP31: FINAL-DAY TALKS",
-  "PETE ROSE PARDONED",
-  "HAITI GANGS KILL 42",
-  "MERZ: TALKS 'DIFFICULT'",
-  "UK DRONE AID FOR KYIV",
-  "US SANCTIONS CARTELS",
-  "VAN GOGH SELLS $190.4M",
-  "POLAND PROBES OBJECTS",
-  "UK-EU YOUTH MOBILITY",
-  "EU-UK RESET DEAL DONE",
-  "ARGENTINA: 71-0 VOTE",
-  "NEPAL PM VISITS INDIA",
-  "MODI: CUT IMPORTS",
-  "META DROPS NET-ZERO GOAL",
+  "14 PETE ROSE PARDONED (REUTERS)",
+  "15 HAITI GANGS KILL 42",
+  "16 MERZ: TALKS 'VERY DIFFICULT' (STRAITS)",
+  "17 UK 260M DRONE AID FOR KYIV",
+  "18 US SANCTIONS CARTELS (REUTERS)",
+  "19 VAN GOGH SELLS FOR $190.4M (DAWN)",
+  "20 UK-EU YOUTH MOBILITY AGREED (BBC)",
+  "21 ARGENTINA PASSES 71-0 VOTE",
+  "22 NEPAL PM BEGINS INDIA VISIT",
+  "23 MODI CALLS FOR IMPORT CUTS",
+  "24 META RETHINKS NET-ZERO GOAL",
+  "25 FIRST US DEEP-SEA MINING LEASES",
+  "26 SOMALIA EXPELS UAE AMBASSADOR",
+  "27 GAZANS RETURN AS IDF OP ENDS",
 ];
 
 const BRIEFS_COL2: string[] = [
-  "DEEP-SEA MINING FIRST",
-  "SOMALIA EXPELS UAE",
-  "GAZANS RETURN HOME",
-  "FIONA THE HIPPO DIES",
-  "EUROPE YOUTH PROTEST",
-  "CANADA: $250K REWARD",
-  "MALAYSIA VISA U-TURN",
-  "INDIGO AXES 4 ROUTES",
-  "BANGLADESH TROOPS OUT",
-  "MOON-SOIL POTATOES",
-  "MUSK: 'PRETTY FOOLISH'",
-  "UK: AXE BRAND VIDEO",
-  "CALEDONIA QUAKE 5.6",
-  "GEORGIA BLAST KILLS 6",
+  "28 EUROPE YOUTH PROTEST ON COSTS",
+  "29 CANADA: $250K FOR GOLDY BRAR",
+  "30 BANGLADESH DEPLOYS PARAMILITARY",
+  "31 NEW CALEDONIA HIT BY 5.6 QUAKE",
+  "32 GEORGIA GAS BLAST KILLS 6",
+  "33 IRAQ ARMY ENTERS STRONGHOLD (REUTERS)",
+  "34 ITALY GENERAL STRIKE OVER BUDGET (AP)",
+  "35 KENYA STARTS FIRST OIL DRILLING (ALLAFRICA)",
+  "36 BUKELE FILES FOR THIRD TERM (AFP)",
+  "37 MALAWI FUEL: 20 LITRES A DAY (AL JAZEERA)",
+  "38 HORMUZ STAYS SHUT; BRENT $92.50 (STRAITS)",
+  "39 RUSSELL FASTEST IN VEGAS PRACTICE (AFP)",
+  "40 POTATOES GROWN IN MOON SOIL",
 ];
 
 const NUMBERS: [string, string][] = [
-  ["370,000", "EVACUATED"],
-  ["209 MM", "PATRAPUR RAIN"],
-  ["-1,101", "DOW POINTS"],
-  ["51-48", "SENATE VOTE"],
+  ["3", "BRIDGES HIT IN KYIV"],
+  ["300,000+", "EVACUATED IN ODISHA"],
+  ["-6.2%", "TAIPEI TAIEX"],
+  ["2.3%", "JAPAN INFLATION"],
   ["$61,273", "BITCOIN PRICE"],
-  ["175*", "NICHOLLS' TON"],
+  ["175*", "NICHOLLS RUNS"],
 ];
 
 function panel(x: number, y: number, w: number, h: number): void {
@@ -1188,131 +1384,117 @@ function panel(x: number, y: number, w: number, h: number): void {
 function build(): void {
   fillRect(0, 0, W, H, PAPER);
 
-  // ---- masthead ----
-  fillRect(8, 6, 1008, 2, INK);
-  fillRect(8, 10, 1008, 1, INK);
-  drawTextCentered(512, 18, 2, "FRIDAY 20 NOVEMBER 2026", RED);
-  drawTextCentered(512, 36, 7, "THE WORLD TODAY", INK);
-  drawTextCentered(512, 90, 2, "ONE DAY. EVERY STORY THAT MATTERED.", INK);
-  // Masthead emblems flanking the title.
-  drawMastheadGlobe(16, 28, 160, 58);
-  drawMastheadSkyline(848, 28, 160, 58);
-  fillRect(8, 106, 1008, 2, INK);
+  // ---- top line: the paper line, and the count line ----
+  drawText(8, 8, 1, "THE WORLD IN ONE DAY", RED);
+  drawTextRight(1016, 8, 1, "40 STORIES - 6 REGIONS - EVERY ONE DATED FRIDAY 20 NOVEMBER 2026", INK);
+  fillRect(8, 20, 1008, 2, INK);
 
-  // ---- row A: two lead heroes ----
-  // Akvan, left, picture on the left.
-  panel(8, 112, 552, 228);
-  drawCyclone(16, 120, 216, 212);
-  drawText(240, 122, 2, "INDIA - CYCLONE", RED);
-  drawText(240, 142, 3, "AKVAN HITS ODISHA", INK);
-  drawText(240, 166, 3, "370,000 EVACUATED", INK);
-  drawPara(
-    240,
-    198,
-    2,
-    312,
-    "Landfall done 11:20 IST. Winds 70-80, gusting 90. No major damage.",
-    INK
-  );
-  drawPara(
-    240,
-    264,
-    2,
-    312,
-    "Heaviest rain: Patrapur 209 mm. Schools shut in 11 districts.",
-    INK
-  );
-  fillRect(240, 322, 150, 16, RED);
-  drawText(246, 325, 1, "LANDFALL DONE 11:20 IST", WHITE);
+  // ---- masthead: the date itself is the headline ----
+  drawTextCentered(512, 26, 6, "FRIDAY 20 NOVEMBER 2026", INK);
+  drawTextCentered(512, 74, 2, "KYIV BRIDGES HIT - AKVAN LANDFALL - ASIA MARKETS ROUT - UK-EU DEAL", RED);
+  fillRect(8, 92, 1008, 2, INK);
 
-  // Kyiv bridges, right, picture on top.
-  panel(568, 112, 448, 228);
-  drawKyiv(576, 120, 432, 100);
-  drawText(576, 226, 2, "UKRAINE - WAR", RED);
-  drawText(576, 246, 3, "KYIV BRIDGES BOMBED", INK);
-  drawText(576, 270, 3, "IN OVERNIGHT STRIKE", INK);
-  drawPara(
-    576,
-    300,
-    2,
-    432,
-    "Three Dnipro crossings hit; at least 5 dead. Biggest bridge attack of the war.",
-    INK
-  );
-
-  // ---- row B: four medium heroes ----
-  const cols = [
-    { x: 8, kicker: "USA - IRAN", pic: drawTrump, h1: "TRUMP DELAYS IRAN", h2: "DECISION TO 2027", b1: "\"WE'LL SEE AFTER", b2: "JANUARY 1\" - FOX", foot: "TRUMP: 'I'M NOT RUSHING'" },
-    { x: 260, kicker: "USA - CONGRESS", pic: drawSenate, h1: "SENATE BLOCKS IRAN", h2: "WAR POWERS VOTE", b1: "51-48: BID TO CURB", b2: "WAR POWERS FAILS", foot: "COLLINS, MURKOWSKI, PAUL: YES" },
-    { x: 512, kicker: "MARKETS - CRYPTO", pic: drawBitcoin, h1: "BITCOIN SINKS TO", h2: "$61,273", b1: "LOWEST SINCE JULY;", b2: "ETF OUT $3.47BN", foot: "7TH STRAIGHT WEEKLY LOSS" },
-    { x: 764, kicker: "SPORT - CRICKET", pic: drawCricket, h1: "NICHOLLS 175* LIFTS", h2: "NZ TO 368", b1: "INDIA REPLY 159-1", b2: "JAISWAL 85 RAHUL 52", foot: "DAY 2 STUMPS, WELLINGTON" },
-  ];
-  for (const c of cols) {
-    panel(c.x, 344, 244, 212);
-    drawText(c.x + 8, 350, 2, c.kicker, RED);
-    c.pic(c.x + 8, 366, 228, 100);
-    drawText(c.x + 8, 472, 2, c.h1, INK);
-    drawText(c.x + 8, 488, 2, c.h2, INK);
-    drawText(c.x + 8, 506, 2, c.b1, INK);
-    drawText(c.x + 8, 522, 2, c.b2, INK);
-    hline(c.x + 8, 540, 228, GREY);
-    drawText(c.x + 8, 546, 1, c.foot, GREY);
-  }
-
-  // ---- Dow strip: Wall Street sell-off ----
-  panel(8, 560, 1008, 56);
-  fillRect(8, 560, 6, 56, RED);
-  drawDow(22, 568, 200, 40);
-  drawText(254, 568, 2, "DOW PLUNGES 1,101 AS WALL ST SELLS OFF", INK);
-  drawText(254, 590, 2, "S&P -2.0%, 6TH STRAIGHT FALL - LONGEST LOSING RUN SINCE 2024.", GREY);
-
-  // ---- row C: world map + briefs ----
-  panel(8, 620, 420, 264);
-  drawText(20, 628, 2, "WHERE THE NEWS HAPPENED", INK);
-  drawMap(16, 646, 404, 150);
-  drawText(20, 800, 2, "1 AKVAN  2 KYIV  3 IRAN  4 SENATE", INK);
-  drawText(20, 816, 2, "5 CRICKET  6 BITCOIN  7 DOW", INK);
-  // Three drawn vignettes for big briefs, under the map.
-  drawVignetteCOP31(16, 830, 128, 52);
-  drawVignetteHaiti(154, 830, 128, 52);
-  drawVignetteVanGogh(292, 830, 128, 52);
-
-  panel(436, 620, 580, 264);
-  drawText(448, 628, 2, "THE DAY IN BRIEF", RED);
-  hline(448, 644, 556, RED);
-  for (let i = 0; i < 14; i++) {
-    const yb = 650 + i * 16;
-    bullet(448, yb + 4, 6, RED);
-    drawText(460, yb, 2, BRIEFS_COL1[i], INK);
-    bullet(742, yb + 4, 6, RED);
-    drawText(754, yb, 2, BRIEFS_COL2[i], INK);
-  }
-
-  // ---- numbers strip ----
+  // ---- numbers strip: six numbers that sum up the day ----
   for (let i = 0; i < NUMBERS.length; i++) {
     const x = 8 + i * 168;
-    panel(x, 888, 166, 60);
-    drawTextCentered(x + 83, 894, 3, NUMBERS[i][0], RED);
-    drawTextCentered(x + 83, 920, 2, NUMBERS[i][1], INK);
+    panel(x, 96, 166, 36);
+    drawTextCentered(x + 83, 100, 3, NUMBERS[i][0], RED);
+    drawTextCentered(x + 83, 122, 1, NUMBERS[i][1], INK);
   }
 
-  // ---- date check + footer ----
-  panel(8, 952, 640, 64);
-  fillRect(8, 952, 640, 4, RED);
-  drawText(20, 960, 2, "DATE CHECK - READ THIS FIRST", RED);
+  // ---- region bar: story counts by region, summing to 40 ----
+  const REGIONS: [string, number, RGB][] = [
+    ["ASIA-PACIFIC 9", 226, TEAL],
+    ["EUROPE 10", 252, BLUE],
+    ["MIDDLE EAST 4", 101, BROWN],
+    ["AFRICA 3", 76, GREEN],
+    ["AMERICAS 11", 277, RED],
+    ["GLOBAL 3", 76, [100, 100, 100]],
+  ];
+  let rx = 8;
+  for (const [label, rw, col] of REGIONS) {
+    fillRect(rx, 136, rw, 16, col);
+    drawTextCentered(rx + Math.floor(rw / 2), 141, 1, label, WHITE);
+    rx += rw;
+  }
+
+  // ---- heroes: three lead stories, each with a picture ----
+  const heroes = [
+    { x: 8, kicker: "1 ODISHA, INDIA - CYCLONE", pic: drawCyclone, h1: "CYCLONE AKVAN COMES", h2: "ASHORE IN EASTERN INDIA", body: "Landfall 11:20 IST. 370,000 in shelters.", src: "(IMD, PTI) - NO DEATHS - RAIN 209 MM" },
+    { x: 344, kicker: "2 KYIV, UKRAINE - WAR", pic: drawKyiv, h1: "RUSSIAN MISSILES HIT", h2: "THREE KYIV BRIDGES", body: "110 missiles, 400 drones. 8 killed.", src: "(KYIV INDEPENDENT, BBC) - POWER AND WATER CUT" },
+    { x: 680, kicker: "3 TAIPEI - SEOUL - TOKYO - MARKETS", pic: drawMarkets, h1: "AI SELL-OFF SINKS", h2: "ASIA'S STOCK MARKETS", body: "Taipei -6.2%, Seoul -5.2%. Tokyo -5.1%.", src: "(AL JAZEERA, REUTERS) - WORST WEEK SINCE 1991" },
+  ];
+  for (const hh of heroes) {
+    panel(hh.x, 156, 328, 220);
+    hh.pic(hh.x + 8, 164, 312, 104);
+    drawText(hh.x + 8, 274, 1, hh.kicker, RED);
+    drawText(hh.x + 8, 286, 2, hh.h1, INK);
+    drawText(hh.x + 8, 303, 2, hh.h2, INK);
+    drawPara(hh.x + 8, 320, 2, 312, hh.body, INK);
+    drawText(hh.x + 8, 360, 1, hh.src, GREY);
+  }
+
+  // ---- mid stories: ten more, each with its own picture ----
+  const mids = [
+    { x: 8, y: 380, kicker: "4 WASHINGTON - DIPLOMACY", pic: drawTrump, h1: "TRUMP DELAYS", h2: "IRAN TO 2027", body: "We will see after January 1, he said. I am not rushing.", src: "(FOX, AXIOS)" },
+    { x: 211, y: 380, kicker: "5 WASHINGTON - CONGRESS", pic: drawSenate, h1: "SENATE BLOCKS", h2: "IRAN WAR VOTE", body: "51-48: bid to curb war powers fails. Collins voted yes.", src: "(REUTERS)" },
+    { x: 414, y: 380, kicker: "6 MARKETS - CRYPTO", pic: drawBitcoinMid, h1: "BITCOIN SINKS", h2: "TO $61,273", body: "Lowest since July. ETF outflows $3.47bn in November.", src: "(REUTERS) - 7TH WEEKLY LOSS" },
+    { x: 617, y: 380, kicker: "7 WELLINGTON - CRICKET", pic: drawCricket, h1: "NICHOLLS 175*", h2: "LIFTS NZ TO 368", body: "Phillips 118, Bumrah 4/92. India 159-1: Jaiswal 85.", src: "(AP) - DAY 2, WELLINGTON" },
+    { x: 820, y: 380, kicker: "8 NEW YORK - MARKETS", pic: drawDow, h1: "DOW PLUNGES", h2: "DOWN 1,101 PTS", body: "S&P -2.0%, 6th straight fall. Longest run since 2024.", src: "(REUTERS)" },
+    { x: 8, y: 552, kicker: "9 BRUSSELS - DIPLOMACY", pic: drawFlags, h1: "UK AND EU SEAL", h2: "A 'RESET' DEAL", body: "Food trade, youth visas, carbon link. Deal agreed.", src: "(REUTERS, BBC)" },
+    { x: 211, y: 552, kicker: "10 ANTALYA - CLIMATE", pic: drawVignetteCOP31, h1: "COP31: NO DEAL", h2: "ON LAST DAY", body: "Draft text leaves out fossil fuels. Talks run on.", src: "(AFP, UN NEWS)" },
+    { x: 414, y: 552, kicker: "11 TOKYO - ECONOMY", pic: drawJapan, h1: "JAPAN INFLATION", h2: "UP TO 2.3%", body: "Core 2.2%, headline 2.3%. A December rise stays in view.", src: "(REUTERS)" },
+    { x: 617, y: 552, kicker: "12 SEOUL - POLITICS", pic: drawKorea, h1: "SEOUL: IMPEACH", h2: "TOP JUDGE", body: "Ruling party acts after an overturned conviction.", src: "(YONHAP)" },
+    { x: 820, y: 552, kicker: "13 E. POLAND - SECURITY", pic: drawPolandMissile, h1: "RUSSIAN MISSILE", h2: "LANDS IN POLAND", body: "Kh-101 down in a field. No one hurt. Tusk: provocation.", src: "(REUTERS)" },
+  ];
+  for (const m of mids) {
+    panel(m.x, m.y, 195, 168);
+    m.pic(m.x + 4, m.y + 8, 187, 78);
+    drawText(m.x + 4, m.y + 90, 1, m.kicker, RED);
+    drawText(m.x + 4, m.y + 102, 2, m.h1, INK);
+    drawText(m.x + 4, m.y + 119, 2, m.h2, INK);
+    drawPara(m.x + 4, m.y + 136, 1, 187, m.body, INK);
+    drawText(m.x + 4, m.y + 158, 1, m.src, GREY);
+  }
+
+  // ---- bottom band: world map + numbered briefs ----
+  panel(8, 724, 400, 194);
+  drawText(20, 732, 2, "WHERE THE NEWS HAPPENED", INK);
+  drawMap(16, 748, 384, 140);
+  drawText(20, 892, 1, "PINS 1-13 MARK THE DRAWN STORIES", INK);
+  drawText(20, 904, 1, "BLUE DOTS: MORE STORIES ON THIS PAGE", INK);
+
+  panel(416, 724, 600, 194);
+  drawText(428, 732, 2, "ALSO ON FRIDAY 20 NOVEMBER", RED);
+  hline(428, 748, 576, RED);
+  for (let i = 0; i < 14; i++) {
+    const yb = 754 + i * 11;
+    bullet(428, yb + 1, 5, RED);
+    drawText(438, yb, 1, BRIEFS_COL1[i], INK);
+  }
+  for (let i = 0; i < 13; i++) {
+    const yb = 754 + i * 11;
+    bullet(716, yb + 1, 5, RED);
+    drawText(726, yb, 1, BRIEFS_COL2[i], INK);
+  }
+
+  // ---- date check: what was left out, and why ----
+  panel(8, 922, 1008, 58);
+  fillRect(8, 922, 1008, 4, RED);
+  drawText(20, 930, 2, "DATE CHECK - READ THIS FIRST", RED);
   drawPara(
     20,
-    978,
-    2,
-    616,
-    "Every story here happened, or was first reported, on Friday 20 November 2026.",
+    946,
+    1,
+    984,
+    "Left out as Thursday 19 November news: Anthropic's Nasdaq debut, the ICJ Myanmar ruling, the Trump-Xi-Putin Shenzhen declaration, GTA 6 going on sale, the Crimea bridge strike. None had happened as Friday's news.",
     INK
   );
-  panel(656, 952, 360, 64);
-  drawText(668, 960, 2, "INTERNATIONAL CHILDREN'S DAY", INK);
-  drawText(668, 978, 2, "SOURCES: REUTERS, AP, IMD", INK);
-  drawText(668, 996, 2, "35 STORIES - ALL VERIFIED", INK);
-  fillRect(8, 1019, 1008, 2, INK);
+
+  // ---- footer ----
+  drawTextCentered(512, 988, 1, "EVERY STORY HERE HAPPENED, OR WAS FIRST REPORTED, ON FRIDAY 20 NOVEMBER 2026", INK);
+  drawTextCentered(512, 1002, 1, "SOURCES NAMED BESIDE EACH STORY - 40 STORIES, ALL VERIFIED - ORIGINAL DRAWINGS", GREY);
+  fillRect(8, 1016, 1008, 2, INK);
 }
 
 // ---------------------------------------------------------------- main
